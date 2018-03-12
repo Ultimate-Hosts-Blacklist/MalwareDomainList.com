@@ -17,15 +17,16 @@ Contributors:
 """
 
 from json import decoder, dump, loads
-from os import chmod, environ, getcwd, path
+from os import chmod, environ, getcwd, path, remove
 from os import sep as directory_separator
-from os import stat
+from os import stat, walk
 from re import compile as comp
 from re import escape
 from re import sub as substrings
-from shutil import copyfileobj
+from shutil import copyfileobj, rmtree
 from stat import S_IEXEC
 from subprocess import PIPE, Popen
+from tarfile import open as tarfile_open
 from time import ctime, strftime
 
 from requests import get
@@ -163,7 +164,7 @@ class Initiate(object):
     def __init__(self):  # pylint: disable=too-many-branches
         self.travis()
         self.travis_permissions()
-        self.stucture()
+        self.structure()
 
     @classmethod
     def travis(cls):
@@ -230,8 +231,9 @@ class Initiate(object):
         """
         Set Settings.informations according to info.json.
 
-        Arguments:
-            index: A string, a valid index name.
+        Argument:
+            - index: str
+                A valid index name.
         """
 
         try:
@@ -278,6 +280,60 @@ class Initiate(object):
             stats = stat(file_path)
             chmod(file_path, stats.st_mode | S_IEXEC)
 
+    def _extract_lines(self, file):
+        """
+        This method extract and format each line to get the domain.
+
+        Argument:
+            - file: str
+                The file to read.
+        """
+
+        result = []
+
+        for line in Helpers.File(file).to_list():
+            if line and not line.startswith('#'):
+                result.append(
+                    self._format_domain(line))
+
+        return result
+
+    def _generate_from_tar_gz(self):
+        """
+        This method will search download and decompress .tar.gz.
+        + searches for `domains` files.
+        """
+
+        download_filename = Settings.raw_link.split('/')[-1]
+        extraction_directory = './temp'
+
+        if Helpers.Download(Settings.raw_link, download_filename).link():
+            Helpers.File(download_filename).tar_gz_decompress(
+                extraction_directory)
+
+            formated_content = []
+
+            for root, dirs, files in walk(  # pylint: disable=unused-variable
+                    extraction_directory):
+                for file in files:
+                    if file.startswith("domains"):
+                        formated_content.extend(
+                            self._extract_lines(path.join(root, file)))
+
+            formated_content = Helpers.List(formated_content).format()
+
+            Helpers.File(
+                Settings.list_name).write(
+                    '\n'.join(formated_content),
+                    overwrite=True)
+
+            Helpers.Directory(extraction_directory).delete()
+            Helpers.File(download_filename).delete()
+
+        else:
+            raise Exception(
+                'Unable to download the the file. Please check the link.')
+
     def list_file(self):
         """
         Download and format Settings.raw_link.
@@ -293,7 +349,9 @@ class Initiate(object):
                 return_data=False,
                 escape=False).match():
 
-            if Helpers.Download(
+            if Settings.raw_link.endswith('.tar.gz'):
+                self._generate_from_tar_gz()
+            elif Helpers.Download(
                     Settings.raw_link,
                     Settings.file_to_test).link():
                 Helpers.Command(
@@ -301,11 +359,7 @@ class Initiate(object):
                     Settings.file_to_test,
                     False).execute()
 
-                formated_content = []
-
-                for line in Helpers.File(Settings.file_to_test).to_list():
-                    if not line.startswith('#'):
-                        formated_content.append(self._format_domain(line))
+                formated_content = self._extract_lines(Settings.file_to_test)
 
                 Helpers.File(
                     Settings.file_to_test).write(
@@ -328,7 +382,7 @@ class Initiate(object):
             return True
         return False
 
-    def stucture(self):
+    def structure(self):
         """
         Read info.json and retranscript its data into the script.
         """
@@ -336,11 +390,11 @@ class Initiate(object):
         if path.isfile(Settings.repository_info):
             content = Helpers.File(Settings.repository_info).read()
             Settings.informations = Helpers.Dict().from_json(content)
-            to_ignore = ['raw_link','name', 'only_ip']
+            to_ignore = ['raw_link', 'name']
 
             for index in Settings.informations:
                 if Settings.informations[index] != '':
-                    if not index in to_ignore[1:]:
+                    if index not in to_ignore[1:]:
                         self.set_info_settings(index)
                 elif index in to_ignore:
                     continue
@@ -365,8 +419,8 @@ class Initiate(object):
         Format the extracted domain before passing it to the system.
 
         Argument:
-            - extracted_domain: A string, the extracted domain or line from
-                the file.
+            - extracted_domain: str
+                The extracted domain or line from the file.
         """
 
         tabs = '\t'
@@ -425,8 +479,7 @@ class Initiate(object):
 
     @classmethod
     def _construct_arguments(cls):
-        """-    current_dir = '%%current_dir%%'
-
+        """
         Construct the arguments to pass to PyFunceble.
         """
 
@@ -449,12 +502,14 @@ class Initiate(object):
 
             if path.isfile(inactive):
                 for line in Helpers.File(inactive).to_list():
-                    if line and not line.startswith('#'):
+                    if line and not line.startswith(
+                            '#') and line in list_content:
                         list_content.remove(line)
 
             if path.isfile(invalid):
                 for line in Helpers.File(invalid).to_list():
-                    if line and not line.startswith('#'):
+                    if line and not line.startswith(
+                            '#') and line in list_content:
                         list_content.remove(line)
 
             Helpers.File(Settings.clean_list_file).write(
@@ -544,8 +599,9 @@ class Helpers(object):  # pylint: disable=too-few-public-methods
         """
         Dictionary manipulations.
 
-        Arguments:
-            main_dictionnary: A dict, the main_dictionnary to pass to the whole class.
+        Argument:
+            - main_dictionnary: dict
+                The main_dictionnary to pass to the whole class.
         """
 
         def __init__(self, main_dictionnary=None):
@@ -559,9 +615,10 @@ class Helpers(object):  # pylint: disable=too-few-public-methods
             """
             Save a dictionnary into a JSON file.
 
-            Arguments:
-                destination: A string, A path to a file where we're going to Write
-                    the converted dict into a JSON format.
+            Argument:
+                - destination: str
+                    A path to a file where we're going to Write the
+                    converted dict into a JSON format.
             """
 
             with open(destination, 'w') as file:
@@ -577,8 +634,9 @@ class Helpers(object):  # pylint: disable=too-few-public-methods
             """
             Convert a JSON formated string into a dictionary.
 
-            Arguments:
-                data: A string, a JSON formeted string to convert to dict format.
+            Argument:
+                data: str
+                    A JSON formeted string to convert to dict format.
             """
 
             try:
@@ -586,12 +644,56 @@ class Helpers(object):  # pylint: disable=too-few-public-methods
             except decoder.JSONDecodeError:
                 return {}
 
+    class List(object):  # pylint: disable=too-few-public-methods
+        """
+        List manipulation.
+        """
+
+        def __init__(self, main_list=None):
+            if main_list is None:
+                self.main_list = []
+            else:
+                self.main_list = main_list
+
+        def format(self):
+            """
+            Return a well formated list. Basicaly, it's sort a list and remove duplicate.
+            """
+
+            try:
+                return sorted(list(set(self.main_list)), key=str.lower)
+            except TypeError:
+                return self.main_list
+
+    class Directory(object):  # pylint: disable=too-few-public-methods
+        """
+        Directory treatment/manipulations.
+
+        Argument:
+            - directory: str
+                A path to the directory to manipulate.
+        """
+
+        def __init__(self, directory):
+            self.directory = directory
+
+        def delete(self):
+            """
+            This method delete the given directory.
+            """
+
+            try:
+                rmtree(self.directory)
+            except FileNotFoundError:
+                pass
+
     class File(object):  # pylint: disable=too-few-public-methods
         """
         File treatment/manipulations.
 
-        Arguments:
-            file: A string, a path to the file to manipulate.
+        Argument:
+            - file: str
+                - a path to the file to manipulate.
         """
 
         def __init__(self, file):
@@ -623,7 +725,9 @@ class Helpers(object):  # pylint: disable=too-few-public-methods
             """
             Write or append data into the given file path.
 
-            :param data_to_write: A string, the data to write.
+            Argument:
+                - data_to_write: str
+                    The data to write.
             """
 
             if data_to_write is not None and isinstance(
@@ -635,13 +739,38 @@ class Helpers(object):  # pylint: disable=too-few-public-methods
                     with open(self.file, 'a', encoding="utf-8") as file:
                         file.write(data_to_write)
 
+        def delete(self):
+            """
+            Delete a given file path.
+            """
+
+            try:
+                remove(self.file)
+            except OSError:
+                pass
+
+        def tar_gz_decompress(self, destination):
+            """
+            Decompress a given file into the given destination.
+
+            Argument:
+                - destination: str
+                    The destination of the decompressed.
+            """
+
+            if destination is not None and isinstance(destination, str):
+                with tarfile_open(self.file) as thetar:
+                    thetar.extractall(path=destination)
+
     class Download(object):  # pylint: disable=too-few-public-methods
         """
         This class will initiate a download of the desired link.
 
         Arguments:
-            link_to_download: A string, the link to the file we are going to download.
-            destination: A string, the destination of the downloaded data.
+            - link_to_download: str
+                The link to the file we are going to download.
+            - destination: str
+                The destination of the downloaded data.
         """
 
         def __init__(self, link_to_download, destination):
@@ -671,9 +800,11 @@ class Helpers(object):  # pylint: disable=too-few-public-methods
         Shell command execution.
 
         Arguments:
-            command: A string, the command to execute.
-            allow_stdout: A bool, If true stdout is always printed otherwise stdout
-                is passed to PIPE.
+            - command: str
+                The command to execute.
+            - allow_stdout: bool
+                If true stdout is always printed otherwise stdout is passed
+                to PIPE.
         """
 
         def __init__(self, command, allow_stdout=True):
@@ -684,8 +815,9 @@ class Helpers(object):  # pylint: disable=too-few-public-methods
         def decode_output(self, to_decode):
             """Decode the output of a shell command in order to be readable.
 
-            Arguments:
-                to_decode: byte(s), Output of a command to decode.
+            Argument:
+                - to_decode: byte
+                    Output of a command to decode.
             """
             if to_decode is not None:
                 # return to_decode.decode(self.decode_type)
@@ -693,7 +825,9 @@ class Helpers(object):  # pylint: disable=too-few-public-methods
             return False
 
         def execute(self):
-            """Execute the given command."""
+            """
+            Execute the given command.
+            """
 
             if not self.stdout:
                 process = Popen(
