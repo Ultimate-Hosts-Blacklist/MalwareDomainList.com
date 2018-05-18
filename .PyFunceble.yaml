@@ -37,7 +37,7 @@ no_files:                     False
 # Activate/Deactivate the usage of WHOIS records for our tests results.
 no_whois:                     False
 # Activate/Deactivate the generation of plain list of domains.
-plain_list_domain:            False
+plain_list_domain:            True
 # Activate/Deactivate the quiet mode.
 quiet:                        False
 # The following will save the referer.
@@ -45,7 +45,7 @@ referer:                      ""
 # HTTP Status code timeout.
 # Consider this as the minimum time in seconds that we need before closing our
 # request.
-seconds_before_http_timeout:  2
+seconds_before_http_timeout:  3
 # Activate/Deactivate the logs sharing.
 # This allow you to share logs which are used to write PyFunceble updates.
 share_logs:                   True
