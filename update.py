@@ -107,7 +107,8 @@ class Settings:  # pylint: disable=too-few-public-methods
     #
     # Note: DO NOT TOUCH UNLESS YOU KNOW WHAT IT MEANS!
     PyFunceble = {
-        ".PyFunceble_production.yaml": "https://raw.githubusercontent.com/funilrys/PyFunceble/master/.PyFunceble_production.yaml"  # pylint: disable=line-too-long
+        ".PyFunceble_production.yaml": "https://raw.githubusercontent.com/funilrys/PyFunceble/master/.PyFunceble_production.yaml",  # pylint: disable=line-too-long
+        ".PyFunceble_LICENSE": "https://raw.githubusercontent.com/funilrys/PyFunceble/dev/LICENSE",
     }
 
     # This variable is used to match [ci skip] from the git log.
@@ -177,7 +178,74 @@ class Initiate:
 
         self._fix_cross_repo_config()
 
+        if not path.isfile(
+            Settings.permanent_config_link.split("/")[-1]
+        ):
+            Helpers.Download(Settings.permanent_config_link,
+                             ".PyFunceble.yaml").link()
         self.structure()
+
+    @classmethod
+    def travis(cls):
+        """
+        Initiate Travis CI settings.
+        """
+
+        try:
+            _ = environ["TRAVIS_BUILD_DIR"]
+
+            Helpers.Command("git remote rm origin", False).execute()
+            Helpers.Command(
+                "git remote add origin https://"
+                + "%s@github.com/%s.git"
+                % (environ["GH_TOKEN"], environ["TRAVIS_REPO_SLUG"]),
+                False,
+            ).execute()
+            Helpers.Command(
+                'git config --global user.email "%s"' % (
+                    environ["GIT_EMAIL"]), False
+            ).execute()
+            Helpers.Command(
+                'git config --global user.name "%s"' % (
+                    environ["GIT_NAME"]), False
+            ).execute()
+            Helpers.Command(
+                "git config --global push.default simple", False).execute()
+            Helpers.Command("git checkout %s" %
+                            environ["GIT_BRANCH"], False).execute()
+
+        except KeyError:
+            pass
+
+    @classmethod
+    def travis_permissions(cls):
+        """
+        Set permissions in order to avoid issues before commiting.
+        """
+        try:
+            build_dir = environ["TRAVIS_BUILD_DIR"]
+            commands = [
+                "sudo chown -R travis:travis %s" % (build_dir),
+                "sudo chgrp -R travis %s" % (build_dir),
+                "sudo chmod -R g+rwX %s" % (build_dir),
+                "sudo chmod 777 -Rf %s.git" % (build_dir +
+                                               directory_separator),
+                r"sudo find %s -type d -exec chmod g+x '{}' \;" % (build_dir),
+            ]
+
+            for command in commands:
+                Helpers.Command(command, False).execute()
+
+            if (
+                Helpers.Command(
+                    "git config core.sharedRepository", False).execute()
+                == ""
+            ):
+                Helpers.Command(
+                    "git config core.sharedRepository group", False
+                ).execute()
+        except KeyError:
+            pass
 
     @classmethod
     def _fix_cross_repo_config(cls):
@@ -225,62 +293,6 @@ class Initiate:
             Helpers.File(".PyFunceble.yaml").write(content, overwrite=True)
 
     @classmethod
-    def travis(cls):
-        """
-        Initiate Travis CI settings.
-        """
-
-        try:
-            _ = environ["TRAVIS_BUILD_DIR"]
-
-            Helpers.Command("git remote rm origin", False).execute()
-            Helpers.Command(
-                "git remote add origin https://"
-                + "%s@github.com/%s.git"
-                % (environ["GH_TOKEN"], environ["TRAVIS_REPO_SLUG"]),
-                False,
-            ).execute()
-            Helpers.Command(
-                'git config --global user.email "%s"' % (environ["GIT_EMAIL"]), False
-            ).execute()
-            Helpers.Command(
-                'git config --global user.name "%s"' % (environ["GIT_NAME"]), False
-            ).execute()
-            Helpers.Command("git config --global push.default simple", False).execute()
-            Helpers.Command("git checkout %s" % environ["GIT_BRANCH"], False).execute()
-
-        except KeyError:
-            pass
-
-    @classmethod
-    def travis_permissions(cls):
-        """
-        Set permissions in order to avoid issues before commiting.
-        """
-        try:
-            build_dir = environ["TRAVIS_BUILD_DIR"]
-            commands = [
-                "sudo chown -R travis:travis %s" % (build_dir),
-                "sudo chgrp -R travis %s" % (build_dir),
-                "sudo chmod -R g+rwX %s" % (build_dir),
-                "sudo chmod 777 -Rf %s.git" % (build_dir + directory_separator),
-                r"sudo find %s -type d -exec chmod g+x '{}' \;" % (build_dir),
-            ]
-
-            for command in commands:
-                Helpers.Command(command, False).execute()
-
-            if (
-                Helpers.Command("git config core.sharedRepository", False).execute()
-                == ""
-            ):
-                Helpers.Command(
-                    "git config core.sharedRepository group", False
-                ).execute()
-        except KeyError:
-            pass
-
-    @classmethod
     def set_info_settings(cls, index):
         """
         Set Settings.informations according to info.json.
@@ -302,9 +314,11 @@ class Initiate:
                 ]
                 and Settings.informations[index].isdigit()
             ):
-                setattr(Settings, index, bool(int(Settings.informations[index])))
+                setattr(Settings, index, bool(
+                    int(Settings.informations[index])))
             elif (
-                index in ["days_until_next_test", "last_test", "autosave_minutes"]
+                index in ["days_until_next_test",
+                          "last_test", "autosave_minutes"]
                 and Settings.informations[index].isdigit()
             ):
                 setattr(Settings, index, int(Settings.informations[index]))
@@ -315,6 +329,20 @@ class Initiate:
                 '"%s" into %s is unknown.' % (index, Settings.repository_info)
             )
 
+    @classmethod
+    def install_right_pyfunceble(cls):
+        """
+        This method will install the right version of PyFunceble
+        depending of the status of the `stable` index.
+        """
+
+        if Settings.stable:
+            to_download = "PyFunceble"
+        else:
+            to_download = "PyFunceble-dev"
+
+        Helpers.Command("pip3 install %s" % to_download, True).execute()
+
     def download_PyFunceble(self):  # pylint: disable=invalid-name
         """
         Download PyFunceble files if they are not present.
@@ -324,14 +352,18 @@ class Initiate:
             file_path = Settings.current_directory + file
 
             if not path.isfile(file_path) or not Settings.stable:
-                download_link = Settings.PyFunceble[file].replace("master", "dev")
+                download_link = Settings.PyFunceble[file].replace(
+                    "master", "dev")
             else:
-                download_link = Settings.PyFunceble[file].replace("dev", "master")
+                download_link = Settings.PyFunceble[file].replace(
+                    "dev", "master")
 
             if not Helpers.Download(download_link, file_path).link():
                 raise Exception("Unable to download %s." % download_link)
 
             self.travis_permissions()
+
+        self.install_right_pyfunceble()
 
         Helpers.File(Settings.current_directory + "tool.py").delete()
         Helpers.File(Settings.current_directory + "PyFunceble.py").delete()
@@ -363,7 +395,8 @@ class Initiate:
         extraction_directory = "./temp"
 
         if Helpers.Download(Settings.raw_link, download_filename).link():
-            Helpers.File(download_filename).tar_gz_decompress(extraction_directory)
+            Helpers.File(download_filename).tar_gz_decompress(
+                extraction_directory)
 
             formated_content = []
 
@@ -386,7 +419,8 @@ class Initiate:
             Helpers.File(download_filename).delete()
 
         else:
-            raise Exception("Unable to download the the file. Please check the link.")
+            raise Exception(
+                "Unable to download the the file. Please check the link.")
 
     def list_file(self):
         """
@@ -410,7 +444,8 @@ class Initiate:
             elif Helpers.Download(
                 Settings.raw_link, Settings.file_to_test, Settings.convert_to_idna
             ).link():
-                Helpers.Command("dos2unix " + Settings.file_to_test, False).execute()
+                Helpers.Command(
+                    "dos2unix " + Settings.file_to_test, False).execute()
 
                 formated_content = self._extract_lines(Settings.file_to_test)
 
@@ -425,10 +460,6 @@ class Initiate:
                 )
 
             if path.isdir(Settings.current_directory + "output"):
-                Helpers.Download(
-                    Settings.permanent_config_link, ".PyFunceble.yaml"
-                ).link()
-
                 try:
                     Helpers.Command("PyFunceble --clean", False).execute()
                 except KeyError:
@@ -482,6 +513,8 @@ class Initiate:
             - extracted_domain: str
                 The extracted domain or line from the file.
         """
+
+        extracted_domain = extracted_domain.strip()
 
         if not extracted_domain.startswith("#"):
 
@@ -604,13 +637,12 @@ class Initiate:
 
             Settings.informations["last_test"] = strftime("%s")
 
-            Helpers.Dict(Settings.informations).to_json(Settings.repository_info)
-
-            Helpers.Download(Settings.permanent_config_link, ".PyFunceble.yaml").link()
+            Helpers.Dict(Settings.informations).to_json(
+                Settings.repository_info)
 
             try:
-                print(Helpers.Command(command_to_execute, True).execute())
-            except:
+                Helpers.Command(command_to_execute, True).execute()
+            except KeyError:
                 pass
 
             try:
@@ -623,7 +655,8 @@ class Initiate:
                     return_data=False,
                     escape=True,
                 ).match():
-                    Settings.informations["currently_under_test"] = str(int(False))
+                    Settings.informations["currently_under_test"] = str(
+                        int(False))
                     commit_message = (
                         "[Results] "
                         + commit_message
@@ -632,10 +665,12 @@ class Initiate:
 
                     self._clean_original()
                 else:
-                    Settings.informations["currently_under_test"] = str(int(True))
+                    Settings.informations["currently_under_test"] = str(
+                        int(True))
                     commit_message = "[Autosave] " + commit_message
 
-                Helpers.Dict(Settings.informations).to_json(Settings.repository_info)
+                Helpers.Dict(Settings.informations).to_json(
+                    Settings.repository_info)
                 self.travis_permissions()
 
                 Helpers.Command(
@@ -649,7 +684,8 @@ class Initiate:
             print(
                 "No need to test until %s."
                 % ctime(
-                    Settings.last_test + (24 * Settings.days_until_next_test * 3600)
+                    Settings.last_test +
+                    (24 * Settings.days_until_next_test * 3600)
                 )
             )
             exit(0)
@@ -863,11 +899,13 @@ class Helpers:  # pylint: disable=too-few-public-methods
                         if isinstance(line, list):
                             converted = []
                             for string in line:
-                                converted.append(string.encode("idna").decode("utf-8"))
+                                converted.append(string.encode(
+                                    "idna").decode("utf-8"))
 
                             to_write.append(" ".join(converted))
                         else:
-                            to_write.append(line.encode("idna").decode("utf-8"))
+                            to_write.append(line.encode(
+                                "idna").decode("utf-8"))
                     except UnicodeError:
                         if isinstance(line, list):
                             to_write.append(" ".join(line))
@@ -938,7 +976,8 @@ class Helpers:  # pylint: disable=too-few-public-methods
             """
 
             if not self.stdout:
-                process = Popen(self.command, stdout=PIPE, stderr=PIPE, shell=True)
+                process = Popen(self.command, stdout=PIPE,
+                                stderr=PIPE, shell=True)
             else:
                 process = Popen(self.command, stderr=PIPE, shell=True)
 
@@ -1008,7 +1047,8 @@ class Helpers:  # pylint: disable=too-few-public-methods
             pre_result = comp(self.regex)
 
             return list(
-                filter(lambda element: not pre_result.search(str(element)), self.data)
+                filter(lambda element: not pre_result.search(
+                    str(element)), self.data)
             )
 
         def matching_list(self):
@@ -1020,7 +1060,8 @@ class Helpers:  # pylint: disable=too-few-public-methods
             pre_result = comp(self.regex)
 
             return list(
-                filter(lambda element: pre_result.search(str(element)), self.data)
+                filter(lambda element: pre_result.search(
+                    str(element)), self.data)
             )
 
         def match(self):
