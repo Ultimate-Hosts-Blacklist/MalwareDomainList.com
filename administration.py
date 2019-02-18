@@ -16,8 +16,8 @@ Contributors:
 """
 # pylint:disable=bad-continuation
 
+from PyFunceble import is_subdomain, syntax_check
 from PyFunceble import test as domain_availability_check
-from PyFunceble.check import Check
 from ultimate_hosts_blacklist_the_whitelist import clean_list_with_official_whitelist
 
 from update import Helpers, Settings, path, strftime
@@ -27,6 +27,7 @@ INFO = {}
 
 PYFUNCEBLE_CONFIGURATION = {"no_whois": True}
 PYFUNCEBLE_CONFIGURATION_VOLATILE = {"no_whois": True, "no_special": True}
+REGEX_SPECIAL = r"\.blogspot\.|\.liveadvert\.com$|\.skyrock\.com$|\.tumblr\.com$|\.wordpress\.com$|\.doubleclick\.net$"  # pylint: disable=line-too-long
 
 
 def get_administration_file():
@@ -57,36 +58,15 @@ def save_administration_file():
     Helpers.Dict(INFO).to_json(Settings.repository_info)
 
 
-def _is_special_pyfunceble(element):
-    """
-    Check if the given element is a SPECIAL.
-    """
-
-    if ".blogspot." in element:
-        return True
-
-    should_endswith = [
-        ".doubleclick.net",
-        ".liveadvert.com",
-        ".skyrock.com",
-        ".tumblr.com",
-        ".wordpress.com",
-    ]
-
-    for marker in should_endswith:
-        if element.endswith(marker):
-            return True
-
-    return False
-
-
 def generate_extra_files():  # pylint: disable=too-many-branches
     """
     Update/Create `clean.list`, `volatile.list` and `whitelisted.list`.
     """
 
     if bool(int(INFO["clean_original"])):  # pylint: disable=too-many-nested-blocks
-        clean_list = temp_clean_list = volatile_list = []
+        clean_list = []
+        temp_clean_list = []
+        volatile_list = []
 
         list_special_content = Helpers.Regex(
             Helpers.File(Settings.file_to_test).to_list(), r"ALL\s"
@@ -102,18 +82,24 @@ def generate_extra_files():  # pylint: disable=too-many-branches
             )
 
         if path.isfile(inactive):
-            for element in Helpers.Regex(
-                Helpers.File(inactive).to_list(), r"^#"
-            ).not_matching_list():
+            list_to_retest = Helpers.Regex(
+                Helpers.File(inactive).to_list(), REGEX_SPECIAL
+            ).matching_list()
+
+            for element in list_to_retest:
+                print(
+                    "Checking eligibility of `{}` for introduction into `{}`...".format(
+                        element, Settings.volatile_list_file
+                    )
+                )
                 if (
                     element
-                    and _is_special_pyfunceble(element)
                     and domain_availability_check(
                         element, config=PYFUNCEBLE_CONFIGURATION_VOLATILE
                     ).lower()
                     == "active"
                 ):
-                    if not Check(element).is_subdomain():
+                    if not is_subdomain(element):
                         if (
                             element.startswith("www.")
                             and domain_availability_check(
@@ -121,6 +107,11 @@ def generate_extra_files():  # pylint: disable=too-many-branches
                             ).lower()
                             == "active"
                         ):
+                            print(
+                                "Introduction of `{}` into `{}`".format(
+                                    element[4:], Settings.volatile_list_file
+                                )
+                            )
                             volatile_list.append(element[4:])
                         else:
                             if (
@@ -130,7 +121,18 @@ def generate_extra_files():  # pylint: disable=too-many-branches
                                 ).lower()
                                 == "active"
                             ):
+                                print(
+                                    "Introduction of `{}` into `{}`".format(
+                                        "www.{}".format(element),
+                                        Settings.volatile_list_file,
+                                    )
+                                )
                                 volatile_list.append("www.{}".format(element))
+                    print(
+                        "Introduction of `{}` into `{}`".format(
+                            element, Settings.volatile_list_file
+                        )
+                    )
                     volatile_list.append(element)
 
         temp_clean_list = Helpers.List(temp_clean_list).format()
@@ -138,10 +140,7 @@ def generate_extra_files():  # pylint: disable=too-many-branches
 
         for element in temp_clean_list:
             if element:
-                if (
-                    not Check(element).is_subdomain()
-                    and Check(element).is_domain_valid()
-                ):
+                if not is_subdomain(element) and syntax_check(element):
                     if (
                         element.startswith("www.")
                         and domain_availability_check(
