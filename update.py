@@ -15,7 +15,8 @@ Contributors:
 
     @GitHubUsername, Name, Email (optional)
 """
-# pylint: disable=bad-continuation, too-many-lines
+# pylint: disable=bad-continuation, too-many-lines, logging-format-interpolation
+import logging
 from json import decoder, dump, loads
 from os import environ, getcwd, path, remove
 from os import sep as directory_separator
@@ -30,7 +31,6 @@ from time import ctime, strftime
 
 from domain2idna import get as domain2idna
 from requests import get
-
 
 class Settings:  # pylint: disable=too-few-public-methods
     """
@@ -51,6 +51,8 @@ class Settings:  # pylint: disable=too-few-public-methods
     # Example:
     # "https://raw.githubusercontent.com/AdAway/adaway.github.io/master/hosts.txt"
     raw_link = ""
+
+    travis_file = ".travis.yml"
 
     # This variable should be initiated with the name of the list once downloaded.
     # Recommended formats:
@@ -163,6 +165,11 @@ class Settings:  # pylint: disable=too-few-public-methods
     # Note: DO NOT TOUCH UNLESS YOU KNOW WHAT IT MEANS!
     permanent_config_link = "https://raw.githubusercontent.com/Ultimate-Hosts-Blacklist/repository-structure/master/.PyFunceble_cross_input_sources.yaml"  # pylint: disable=line-too-long
 
+    # This variable is used to get the latest travis fil.
+    #
+    # Noe: DO NOT TOUCH UNLESS YOU KNOW WHAT IT MEANS!
+    permanent_travis_file_link = "https://raw.githubusercontent.com/Ultimate-Hosts-Blacklist/repository-structure/master/.travis.yml"  # pylint: disable=line-too-long
+
     # This variable is used to set the arguments when executing PyFunceble.py
     #
     # Note: DO NOT TOUCH UNLESS YOU KNOW WHAT IT MEANS!
@@ -210,20 +217,31 @@ class TravisCI:
         try:
             _ = environ["TRAVIS_BUILD_DIR"]
 
+            logging.debug("Deletion of the remote origin.")
             Helpers.Command("git remote rm origin", False).execute()
+
+            logging.debug("Addition of the correct remote origin.")
             Helpers.Command(
                 "git remote add origin https://"
                 + "%s@github.com/%s.git"
                 % (environ["GH_TOKEN"], environ["TRAVIS_REPO_SLUG"]),
                 False,
             ).execute()
+
+            logging.debug("Addition of the GIT email.")
             Helpers.Command(
                 'git config --global user.email "%s"' % (environ["GIT_EMAIL"]), False
             ).execute()
+
+            logging.debug("Addition of the GIT name.")
             Helpers.Command(
                 'git config --global user.name "%s"' % (environ["GIT_NAME"]), False
             ).execute()
+
+            logging.debug("Setting the push mode to `simple`.")
             Helpers.Command("git config --global push.default simple", False).execute()
+
+            logging.debug("Checkout `{}`".format(environ["GIT_BRANCH"]))
             Helpers.Command("git checkout %s" % environ["GIT_BRANCH"], False).execute()
 
         except KeyError:
@@ -246,6 +264,7 @@ class TravisCI:
             ]
 
             for command in commands:
+                logging.debug("Executing: {0}".format(command))
                 Helpers.Command(command, False).execute()
 
             if (
@@ -274,11 +293,16 @@ class PyFunceble:
         Install the right version of PyFunceble.
         """
 
+        logging.debug("Starting of the installation process of PyFunceble.")
+
         if Settings.stable:
             to_download = "PyFunceble"
         else:
             to_download = "PyFunceble-dev"
 
+        logging.debug("To download: {}".format(to_download))
+
+        logging.debug("Installing {}".format(to_download))
         Helpers.Command("pip3 install --upgrade %s" % to_download, False).execute()
 
     @classmethod
@@ -287,17 +311,19 @@ class PyFunceble:
         Download all complementary PyFunceble's related files.
         """
 
-        for file in Settings.PyFunceble:
+        for file, link in Settings.PyFunceble.items():
             file_path = Settings.current_directory + file
 
             if not Settings.stable:
-                download_link = Settings.PyFunceble[file].replace("master", "dev")
+                link = link.replace("master", "dev")
             else:
-                download_link = Settings.PyFunceble[file].replace("dev", "master")
+                link = link.replace("dev", "master")
 
-            if not Helpers.Download(download_link, file_path).link():
-                raise Exception("Unable to download %s." % download_link)
+            logging.debug("Looking for `{}` at `{}`".format(file, link))
+            if not Helpers.Download(link, file_path).link():
+                raise Exception("Unable to download %s." % link)
 
+        logging.debug("Deletion of old files.")
         Helpers.File(Settings.current_directory + "tool.py").delete()
         Helpers.File(Settings.current_directory + "PyFunceble.py").delete()
         Helpers.File(Settings.current_directory + "requirements.txt").delete()
@@ -309,6 +335,7 @@ class PyFunceble:
         """
 
         if path.isdir(Settings.current_directory + "output"):
+            logging.debug("Starting of the cleaning process.")
             Helpers.Command("PyFunceble --clean", False).execute()
 
     @classmethod
@@ -347,10 +374,12 @@ class PyFunceble:
             return_data=False,
             escape=False,
         ).match():
+            logging.debug("Allowed because of launch marker.")
             cls.clean()
             return True
 
         if not Settings.currently_under_test:
+            logging.debug("Allowed because currently under test.")
             cls.clean()
             return True
 
@@ -360,10 +389,13 @@ class PyFunceble:
             )
 
             if int(strftime("%s")) >= retest_date or Settings.currently_under_test:
+                logging.debug("Allowed because of time.")
                 return True
 
+            logging.debug("Disallowed because of time.")
             return False
 
+        logging.debug("Allowed because of !?.")
         return True
 
     @classmethod
@@ -376,12 +408,8 @@ class PyFunceble:
 
         command_to_execute = "%s -v && " % (PyFunceble_path)
 
-        try:
-            command_to_execute += (
-                "export TRAVIS_BUILD_DIR=%s && " % environ["TRAVIS_BUILD_DIR"]
-            )
-        except KeyError:
-            pass
+        command_to_execute += "export PYFUNCEBLE_AUTO_CONFIGURATION=PyFunceble && "
+        command_to_execute += "%s --directory-structure -q && " % PyFunceble_path
 
         command_to_execute += "%s %s -f %s" % (
             PyFunceble_path,
@@ -390,19 +418,29 @@ class PyFunceble:
         )
 
         if cls.is_test_allowed():
+            logging.debug("Downloading the latest project LICENSE.")
             Helpers.Download(
                 Settings.permanent_license_link, Settings.current_directory + "LICENSE"
             ).link()
 
+            logging.debug("Update informations (info.json)")
             Settings.informations.update(
                 {"last_test": strftime("%s"), "currently_under_test": str(int(True))}
             )
 
             for index in ["clean_list_file", "list_name"]:
                 if index in Settings.informations:
+                    logging.debug(
+                        "Deletion of `{}` from the administration file.".format(index)
+                    )
                     del Settings.informations[index]
 
+            logging.debug(
+                "Latest administration content: {}".format(Settings.informations)
+            )
             Helpers.Dict(Settings.informations).to_json(Settings.repository_info)
+
+            logging.debug("Launching: {}".format(command_to_execute))
 
             Helpers.Command(command_to_execute, True).execute()
 
@@ -426,7 +464,12 @@ class PyFunceble:
             Update the cross repository configuration.
             """
 
-            if path.isfile(Settings.permanent_config_link.split("/")[-1]):
+            destination = Settings.permanent_config_link.split("/")[-1]
+            logging.debug("Destination is {}".format(destination))
+
+            if path.isfile(destination):
+                logging.debug("Destination file exists.")
+
                 if not Settings.stable:
                     to_download = Settings.PyFunceble[
                         ".PyFunceble_production.yaml"
@@ -436,35 +479,135 @@ class PyFunceble:
                         ".PyFunceble_production.yaml"
                     ].replace("dev", "master")
 
-                destination = Settings.permanent_config_link.split("/")[-1]
+                logging.debug(
+                    "Downloading `{}` into `{}`".format(to_download, destination)
+                )
+                Helpers.Download(to_download, destination).link()
 
-                if path.isfile(destination):
-                    Helpers.Download(to_download, destination).link()
+                try:
+                    _ = environ["TRAVIS_BUILD_DIR"]
+                    travis_branch = environ["GIT_BRANCH"]
+                except KeyError:
+                    travis_branch = "master"
 
-                    to_replace = {
-                        r"less:.*": "less: False",
-                        r"plain_list_domain:.*": "plain_list_domain: True",
-                        r"seconds_before_http_timeout:.*": "seconds_before_http_timeout: 6",
-                        r"share_logs:.*": "share_logs: True",
-                        r"show_execution_time:.*": "show_execution_time: True",
-                        r"split:.*": "split: True",
-                        r"travis:.*": "travis: True",
-                        r"travis_autosave_commit:.*": 'travis_autosave_commit: "[Autosave] Testing for Ultimate Hosts Blacklist"',  # pylint: disable=line-too-long
-                        r"travis_autosave_final_commit:.*": 'travis_autosave_final_commit: "[Results] Testing for Ultimate Hosts Blacklist"',  # pylint: disable=line-too-long
-                        r"travis_branch:.*": "travis_branch: master",
-                        r"travis_autosave_minutes:.*": "travis_autosave_minutes: %s"
-                        % Settings.autosave_minutes,
-                    }
+                to_replace = {
+                    r"less:.*": "less: False",
+                    r"plain_list_domain:.*": "plain_list_domain: True",
+                    r"seconds_before_http_timeout:.*": "seconds_before_http_timeout: 6",
+                    r"share_logs:.*": "share_logs: True",
+                    r"show_execution_time:.*": "show_execution_time: True",
+                    r"split:.*": "split: True",
+                    r"travis:.*": "travis: True",
+                    r"travis_autosave_commit:.*": 'travis_autosave_commit: "[Autosave] Testing for Ultimate Hosts Blacklist"',  # pylint: disable=line-too-long
+                    r"travis_autosave_final_commit:.*": 'travis_autosave_final_commit: "[Results] Testing for Ultimate Hosts Blacklist"',  # pylint: disable=line-too-long
+                    r"travis_branch:.*": "travis_branch: %s" % travis_branch,
+                    r"travis_autosave_minutes:.*": "travis_autosave_minutes: %s"
+                    % Settings.autosave_minutes,
+                }
 
-                    content = Helpers.File(destination).read()
+                content = Helpers.File(destination).read()
 
-                    for regex, replacement in to_replace.items():
-                        content = Helpers.Regex(
-                            content, regex, replace_with=replacement, return_data=True
-                        ).replace()
+                for regex, replacement in to_replace.items():
+                    content = Helpers.Regex(
+                        content, regex, replace_with=replacement, return_data=True
+                    ).replace()
 
-                    Helpers.File(destination).write(content, overwrite=True)
-                    Helpers.File(".PyFunceble.yaml").write(content, overwrite=True)
+                logging.debug("Latest config: {}".format(content))
+
+                logging.debug("Writting latest config into `{}`".format(destination))
+                Helpers.File(destination).write(content, overwrite=True)
+                logging.debug("Writting latest config into `.PyFunceble.yaml`")
+                Helpers.File(".PyFunceble.yaml").write(content, overwrite=True)
+            else:
+
+                try:
+                    _ = environ["TRAVIS_BUILD_DIR"]
+
+                    with open(
+                        Settings.current_directory + Settings.travis_file,
+                        "r",
+                        encoding="utf-8",
+                    ) as file_stream:
+                        local_data = yaml_load(file_stream)
+
+                    if not Settings.stable:
+                        to_download = Settings.permanent_travis_file_link.replace(
+                            "master", "dev"
+                        )
+                    else:
+                        to_download = Settings.permanent_travis_file_link.replace(
+                            "dev", "master"
+                        )
+
+                    upstream_data = yaml_load(
+                        Helpers.Download(to_download, None).link()
+                    )
+
+                    to_update = [
+                        "install",
+                        "notifications",
+                        "addons",
+                        "cache",
+                        "dist",
+                        "language",
+                        "matrix",
+                        "python",
+                        "script",
+                        "sudo",
+                    ]
+
+                    for index in to_update:
+                        local_data[index] = upstream_data[index]
+
+                    with open(
+                        Settings.current_directory + Settings.travis_file,
+                        "w",
+                        encoding="utf-8",
+                    ) as file_stream:
+                        file_stream.write(
+                            yaml_dump(
+                                local_data,
+                                encoding="utf-8",
+                                allow_unicode=True,
+                                indent=4,
+                                default_flow_style=False,
+                            ).decode("utf-8")
+                        )
+
+                    print(
+                        Helpers.Command(
+                            "git status --porcelain {0}".format(
+                                Settings.current_directory + Settings.travis_file
+                            ),
+                            allow_stdout=False,
+                        )
+                        .execute()
+                        .strip()
+                        .startswith("M")
+                    )
+
+                    if (
+                        Helpers.Command(
+                            "git status --porcelain {0}".format(
+                                Settings.current_directory + Settings.travis_file
+                            ),
+                            allow_stdout=False,
+                        )
+                        .execute()
+                        .strip()
+                        .startswith("M")
+                    ):
+                        print(
+                            Helpers.Command(
+                                "git add {0} && git commit -m 'Update of the configuration file' && git push origin {1}".format(  # pylint: disable=line-too-long
+                                    Settings.current_directory + Settings.travis_file,
+                                    environ["GIT_BRANCH"],
+                                )
+                            ).execute()
+                        )
+                        exit(0)
+                except KeyError:
+                    pass
 
         @classmethod
         def install(cls):
@@ -687,7 +830,10 @@ class Administration:
         """
 
         if path.isfile(Settings.repository_info):
+            logging.debug("Getting content of the info.json.")
             content = Helpers.File(Settings.repository_info).read()
+            logging.debug("Content: {}".format(content))
+
             Settings.informations = Helpers.Dict().from_json(content)
             to_ignore = ["raw_link", "name"]
 
@@ -702,6 +848,7 @@ class Administration:
                         'Please complete "%s" into %s'
                         % (index, Settings.repository_info)
                     )
+            logging.debug("Content understood and decoded correctly.")
         else:
             raise Exception(
                 "Impossible to read %s" % Settings.current_directory + "info.json"
@@ -927,9 +1074,13 @@ class Helpers:  # pylint: disable=too-few-public-methods
                 request = get(self.link_to_download, stream=True)
 
                 if request.status_code == 200:
-                    with open(self.destination, "wb") as file:
-                        request.raw.decode_content = True
-                        copyfileobj(request.raw, file)
+                    request.raw.decode_content = True
+                    if self.destination:
+                        with open(self.destination, "wb") as file:
+                            request.raw.decode_content = True
+                            copyfileobj(request.raw, file)
+                    else:
+                        return request.text
 
                     del request
 
@@ -1116,5 +1267,19 @@ class Helpers:  # pylint: disable=too-few-public-methods
 
 
 if __name__ == "__main__":
+    try:
+        from yaml import safe_dump as yaml_dump
+        from yaml import safe_load as yaml_load
+    except ModuleNotFoundError:
+        Helpers.Command("pip install pyyaml --upgrade").execute()
+
+        from yaml import safe_dump as yaml_dump
+        from yaml import safe_load as yaml_load
+
+    if "DEBUG" in environ:
+        logging.basicConfig(
+            format="%(asctime)-15s %(levelname)-8s %(message)s", level=logging.DEBUG
+        )
+
     REPOSITORY_UPDATE = Administration()
     REPOSITORY_UPDATE()

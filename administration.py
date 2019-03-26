@@ -16,7 +16,7 @@ Contributors:
 """
 # pylint:disable=bad-continuation
 
-from ultimate_hosts_blacklist_the_whitelist import clean_list_with_official_whitelist
+from ultimate_hosts_blacklist.whitelist import clean_list_with_official_whitelist
 
 from update import Helpers, Settings, path, strftime
 
@@ -94,7 +94,9 @@ def generate_extra_files():  # pylint: disable=too-many-branches,too-many-statem
         print(
             "Generation of the content of `{}`".format(Settings.whitelisted_list_file)
         )
-        whitelisted = clean_list_with_official_whitelist(clean_list)
+        whitelisted = clean_list_with_official_whitelist(
+            clean_list, multiprocessing=True, processes=60
+        )
 
         volatile_list.extend(clean_list)
         volatile_list = Helpers.List(volatile_list).format()
