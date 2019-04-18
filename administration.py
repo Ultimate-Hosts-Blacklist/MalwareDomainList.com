@@ -89,16 +89,25 @@ def generate_extra_files():  # pylint: disable=too-many-branches,too-many-statem
             )
             print("Stoping manipulation of `{}`.".format(inactive))
 
-        print("Deletion of duplicate for `{}`".format(Settings.clean_list_file))
+        print("Deletion of duplicate from `{}`".format(Settings.clean_list_file))
         clean_list = Helpers.List(clean_list).format()
+
         print(
-            "Generation of the content of `{}`".format(Settings.whitelisted_list_file)
+            "Whitelisting of `{}` for `{}`".format(
+                Settings.clean_list_file, Settings.whitelisted_list_file
+            )
         )
         whitelisted = clean_list_with_official_whitelist(
             clean_list, multiprocessing=True, processes=60
         )
 
+        print("Completion of {}".format(Settings.volatile_list_file))
         volatile_list.extend(clean_list)
+
+        print("Whitelisting of `{}".format(Settings.volatile_list_file))
+        volatile_list = clean_list_with_official_whitelist(
+            volatile_list, multiprocessing=True, processes=60
+        )
         volatile_list = Helpers.List(volatile_list).format()
 
         print("Writing `{}`".format(Settings.clean_list_file))
