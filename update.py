@@ -124,7 +124,7 @@ class Settings:  # pylint: disable=too-few-public-methods
     #
     # Note: True = master | False = dev
     # Note: This variable is auto updated by Initiate()
-    stable = False
+    stable = True
 
     # This variable represent the PyFunceble infrastructure.
     #
