@@ -17,7 +17,7 @@ env:
 install:
 - pip3 install --upgrade pip
 - pip3 install requests
-- pip3 install ultimate-hosts-blacklist-whitelist
+- pip3 install ultimate-hosts-blacklist-whitelist PyYaml
 - if [[ ! -f .admin ]]; then wget "${UPDATE_LOCATION}" -o /dev/null -O update.py &&
     chmod +x update.py; else echo "No need to download/update update.py."; fi
 - if [[ ! -f .admin ]]; then wget "${ADMINISTATION_LOCATION}" -o /dev/null -O administration.py
