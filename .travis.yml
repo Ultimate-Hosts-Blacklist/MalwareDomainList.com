@@ -16,13 +16,7 @@ env:
     -   ADMINISTATION_LOCATION: https://raw.githubusercontent.com/Ultimate-Hosts-Blacklist/repository-structure/master/administration.py
 install:
 - pip3 install --upgrade pip
-- pip3 install requests
-- pip3 install ultimate-hosts-blacklist-whitelist PyYaml
-- if [[ ! -f .admin ]]; then wget "${UPDATE_LOCATION}" -o /dev/null -O update.py &&
-    chmod +x update.py; else echo "No need to download/update update.py."; fi
-- if [[ ! -f .admin ]]; then wget "${ADMINISTATION_LOCATION}" -o /dev/null -O administration.py
-    && chmod +x administration.py; else echo "No need to download/update administration.py.";
-    fi
+- pip3 install ultimate-hosts-blacklist-input-repo-updater
 language: python
 matrix:
     fast_finish: true
@@ -36,5 +30,6 @@ notifications:
 python:
 - '3.7'
 script:
-- python3 ./update.py
+- ultimate-hosts-blacklist-input-repo-updater --version
+- ultimate-hosts-blacklist-input-repo-updater -m
 sudo: required
