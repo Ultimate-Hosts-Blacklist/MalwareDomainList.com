@@ -4,6 +4,7 @@ command: ''
 command_before_end: ''
 custom_ip: 0.0.0.0
 days_between_db_retest: 1
+db_type: json
 debug: false
 dns_server:
 - 1.1.1.1
@@ -71,9 +72,11 @@ links:
     config: https://raw.githubusercontent.com/funilrys/PyFunceble/dev/.PyFunceble_production.yaml
     dir_structure: https://raw.githubusercontent.com/funilrys/PyFunceble/dev/dir_structure_production.json
     iana: https://raw.githubusercontent.com/funilrys/PyFunceble/dev/iana-domains-db.json
+    mysql: https://raw.githubusercontent.com/funilrys/PyFunceble/dev/db_types/mysql.sql
     psl: https://raw.githubusercontent.com/funilrys/PyFunceble/dev/public-suffix.json
     repo: https://github.com/funilrys/PyFunceble
     requirements: https://raw.githubusercontent.com/funilrys/PyFunceble/dev/requirements.txt
+    sqlite: https://raw.githubusercontent.com/funilrys/PyFunceble/dev/db_types/sqlite.sql
 local: false
 logs: true
 maximal_processes: 25
@@ -97,6 +100,11 @@ outputs:
             up: active_and_merged_in_results
     complements:
         directory: complements
+    db_type:
+        directory: db_types
+        files:
+            mysql: mysql.sql
+            sqlite: sqlite.sql
     default_files:
         dir_structure: dir_structure.json
         iana: iana-domains-db.json
@@ -104,6 +112,7 @@ outputs:
         mining: mining.json
         public_suffix: public-suffix.json
         results: results.txt
+        sqlite: pyfunceble.db
         whois_db: whois_db.json
     domains:
         directory: domains
