@@ -187,7 +187,7 @@ syntax: false
 travis: true
 travis_autosave_commit: '[Autosave] Testing for Ultimate Hosts Blacklist'
 travis_autosave_final_commit: '[Results] Testing for Ultimate Hosts Blacklist'
-travis_autosave_minutes: 15
+travis_autosave_minutes: 5
 travis_branch: master
 unified: false
 user_agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)
