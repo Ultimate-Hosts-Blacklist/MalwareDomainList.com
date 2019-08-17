@@ -62,6 +62,7 @@ http_codes:
         - 204
         - 205
         - 206
+    not_found_default: XXX
 iana_whois_server: whois.iana.org
 idna_conversion: true
 inactive_database: true
@@ -77,7 +78,6 @@ links:
     psl: https://raw.githubusercontent.com/funilrys/PyFunceble/dev/public-suffix.json
     repo: https://github.com/funilrys/PyFunceble
     requirements: https://raw.githubusercontent.com/funilrys/PyFunceble/dev/requirements.txt
-    sqlite: https://raw.githubusercontent.com/funilrys/PyFunceble/dev/db_types/sqlite.sql
 local: false
 logs: true
 maximal_processes: 25
@@ -106,7 +106,6 @@ outputs:
         files:
             mariadb: mariadb.sql
             mysql: mysql.sql
-            sqlite: sqlite.sql
     default_files:
         dir_structure: dir_structure.json
         iana: iana-domains-db.json
@@ -114,7 +113,6 @@ outputs:
         mining: mining.json
         public_suffix: public-suffix.json
         results: results.txt
-        sqlite: pyfunceble.db
         whois_db: whois_db.json
     domains:
         directory: domains
@@ -191,6 +189,6 @@ travis_autosave_minutes: 10
 travis_branch: master
 unified: false
 user_agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)
-    Chrome/73.0.3683.86 Safari/537.36
+    Chrome/76.0.3809.100 Safari/537.36
 verify_ssl_certificate: false
 whois_database: true
