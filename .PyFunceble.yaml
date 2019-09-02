@@ -1,4 +1,5 @@
 adblock: false
+aggressive: false
 auto_continue: true
 command: ''
 command_before_end: ''
