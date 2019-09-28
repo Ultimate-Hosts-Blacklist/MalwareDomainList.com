@@ -183,6 +183,7 @@ status:
         up: ACTIVE
         valid: VALID
 syntax: false
+timeout: 5
 travis: true
 travis_autosave_commit: '[Autosave] Testing for Ultimate Hosts Blacklist'
 travis_autosave_final_commit: '[Results] Testing for Ultimate Hosts Blacklist'
