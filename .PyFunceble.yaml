@@ -7,6 +7,7 @@ custom_ip: 0.0.0.0
 days_between_db_retest: 1
 db_type: json
 debug: false
+dns_lookup_over_tcp: true
 dns_server:
 - 1.1.1.1
 - 1.0.0.1
@@ -84,6 +85,7 @@ logs: true
 maximal_processes: 25
 mining: false
 multiprocess: false
+multiprocess_merging_mode: end
 no_files: false
 no_special: false
 no_whois: false
@@ -191,6 +193,6 @@ travis_autosave_minutes: 10
 travis_branch: master
 unified: false
 user_agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)
-    Chrome/76.0.3809.100 Safari/537.36
+    Chrome/77.0.3865.90 Safari/537.36
 verify_ssl_certificate: false
 whois_database: true
