@@ -1,6 +1,12 @@
 adblock: false
 aggressive: false
 auto_continue: true
+ci: true
+ci_autosave_commit: '[Autosave] Testing for Ultimate Hosts Blacklist'
+ci_autosave_final_commit: '[Results] Testing for Ultimate Hosts Blacklist'
+ci_autosave_minutes: 10
+ci_branch: master
+ci_distribution_branch: master
 command: ''
 command_before_end: ''
 custom_ip: 0.0.0.0
@@ -186,12 +192,6 @@ status:
         valid: VALID
 syntax: false
 timeout: 5
-travis: true
-travis_autosave_commit: '[Autosave] Testing for Ultimate Hosts Blacklist'
-travis_autosave_final_commit: '[Results] Testing for Ultimate Hosts Blacklist'
-travis_autosave_minutes: 10
-travis_branch: master
-travis_distribution_branch: master
 unified: false
 user_agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)
     Chrome/77.0.3865.90 Safari/537.36
