@@ -9,6 +9,7 @@ ci_branch: master
 ci_distribution_branch: master
 command: ''
 command_before_end: ''
+cooldown_time: null
 custom_ip: 0.0.0.0
 days_between_db_retest: 1
 db_type: json
