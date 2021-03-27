@@ -5716,7 +5716,6 @@
         "demon.nl"
     ],
     "no": [
-        "eid.no",
         "fhs.no",
         "vgs.no",
         "fylkesbibl.no",
@@ -5926,6 +5925,7 @@
         "xn--dyry-ira.no",
         "donna.no",
         "xn--dnna-gra.no",
+        "eid.no",
         "eidfjord.no",
         "eidsberg.no",
         "eidskog.no",
@@ -8266,11 +8266,11 @@
         "lima.zone"
     ],
     "zw": [
+        "org.zw",
         "ac.zw",
         "co.zw",
         "gov.zw",
-        "mil.zw",
-        "org.zw"
+        "mil.zw"
     ],
     "рус": [
         "биз.рус",
