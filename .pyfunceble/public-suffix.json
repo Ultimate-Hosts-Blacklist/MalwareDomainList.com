@@ -8266,11 +8266,11 @@
         "lima.zone"
     ],
     "zw": [
-        "org.zw",
         "ac.zw",
         "co.zw",
         "gov.zw",
-        "mil.zw"
+        "mil.zw",
+        "org.zw"
     ],
     "рус": [
         "биз.рус",
