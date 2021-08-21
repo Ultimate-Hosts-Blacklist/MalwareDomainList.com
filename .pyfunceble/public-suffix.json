@@ -164,6 +164,8 @@
     "app": [
         "a.run.app",
         "bookonline.app",
+        "clerk.app",
+        "clerkstage.app",
         "developer.app",
         "edgecompute.app",
         "fireweb.app",
