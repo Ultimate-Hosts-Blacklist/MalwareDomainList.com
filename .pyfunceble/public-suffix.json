@@ -1359,7 +1359,6 @@
         "servecounterstrike.com",
         "serveexchange.com",
         "serveftp.com",
-        "servegame.com",
         "servehalflife.com",
         "servehttp.com",
         "servehumour.com",
@@ -8403,6 +8402,7 @@
     ],
     "ve": [
         "arts.ve",
+        "bib.ve",
         "co.ve",
         "com.ve",
         "e12.ve",
@@ -8414,7 +8414,9 @@
         "int.ve",
         "mil.ve",
         "net.ve",
+        "nom.ve",
         "org.ve",
+        "rar.ve",
         "rec.ve",
         "store.ve",
         "tec.ve",
@@ -8472,6 +8474,10 @@
         "mypets.ws",
         "net.ws",
         "org.ws"
+    ],
+    "xn--p1acf": [
+        "servegame.com",
+        "xn--h1ahn.xn--p1acf"
     ],
     "xyz": [
         "blogsite.xyz",
