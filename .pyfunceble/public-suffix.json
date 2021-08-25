@@ -178,7 +178,6 @@
         "ondigitalocean.app",
         "platform0.app",
         "run.app",
-        "s3-website.eu-west-2.amazonaws.com",
         "telebit.app",
         "vercel.app",
         "web.app",
@@ -1326,6 +1325,7 @@
         "s3-website.ap-south-1.amazonaws.com",
         "s3-website.ca-central-1.amazonaws.com",
         "s3-website.eu-central-1.amazonaws.com",
+        "s3-website.eu-west-2.amazonaws.com",
         "s3-website.eu-west-3.amazonaws.com",
         "s3-website.us-east-2.amazonaws.com",
         "s3.amazonaws.com",
@@ -7393,7 +7393,8 @@
         "go.pw",
         "ne.pw",
         "or.pw",
-        "x443.pw"
+        "x443.pw",
+        "xn--uc0atv.tw"
     ],
     "py": [
         "com.py",
@@ -7983,10 +7984,8 @@
         "org.tw",
         "url.tw",
         "xn--czrw28b.tw",
-        "xn--uc0atv.tw",
         "xn--zf0ao64a.tw",
         "商業.tw",
-        "組織.tw",
         "網路.tw"
     ],
     "tz": [
