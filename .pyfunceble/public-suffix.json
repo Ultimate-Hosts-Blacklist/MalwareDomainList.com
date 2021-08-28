@@ -8524,6 +8524,7 @@
         "ac.zm",
         "biz.zm",
         "co.zm",
+        "com.zm",
         "edu.zm",
         "gov.zm",
         "info.zm",
@@ -8541,7 +8542,6 @@
     "zw": [
         "ac.zw",
         "co.zw",
-        "com.zm",
         "gov.zw",
         "mil.zw",
         "org.zw"
