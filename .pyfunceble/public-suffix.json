@@ -752,9 +752,6 @@
         "scrapping.cc",
         "twmail.cc"
     ],
-    "cd": [
-        "gov.cd"
-    ],
     "cf": [
         "blogspot.cf"
     ],
@@ -863,6 +860,7 @@
         "elb.amazonaws.com.cn",
         "fj.cn",
         "gd.cn",
+        "gov.cd",
         "gov.cn",
         "gs.cn",
         "gx.cn",
