@@ -218,6 +218,7 @@
         "biz.at",
         "blogspot.co.at",
         "co.at",
+        "elementor.cool",
         "ex.futurecms.at",
         "ex.ortsinfo.at",
         "futurecms.at",
@@ -748,6 +749,7 @@
         "fantasyleague.cc",
         "ftpaccess.cc",
         "game-server.cc",
+        "instances.spawn.cc",
         "myphotos.cc",
         "scrapping.cc",
         "twmail.cc"
@@ -1432,8 +1434,7 @@
         "ravendb.community"
     ],
     "cool": [
-        "de.cool",
-        "elementor.cool"
+        "de.cool"
     ],
     "cr": [
         "ac.cr",
