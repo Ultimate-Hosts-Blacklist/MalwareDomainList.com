@@ -184,16 +184,20 @@
         "wnext.app"
     ],
     "ar": [
+        "bet.ar",
         "blogspot.com.ar",
         "com.ar",
+        "coop.ar",
         "edu.ar",
         "gob.ar",
         "gov.ar",
         "int.ar",
         "mil.ar",
         "musica.ar",
+        "mutual.ar",
         "net.ar",
         "org.ar",
+        "senasa.ar",
         "tur.ar"
     ],
     "arpa": [
@@ -218,7 +222,6 @@
         "biz.at",
         "blogspot.co.at",
         "co.at",
-        "elementor.cool",
         "ex.futurecms.at",
         "ex.ortsinfo.at",
         "futurecms.at",
@@ -1434,7 +1437,8 @@
         "ravendb.community"
     ],
     "cool": [
-        "de.cool"
+        "de.cool",
+        "elementor.cool"
     ],
     "cr": [
         "ac.cr",
