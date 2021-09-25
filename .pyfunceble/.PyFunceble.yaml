@@ -57,6 +57,7 @@ debug:
     active: false
     level: info
 dns:
+    delay: 0.0
     follow_server_order: true
     protocol: UDP
     server: null
@@ -75,7 +76,6 @@ http_codes:
         - 416
         - 451
         potentially_up:
-        - 0
         - 300
         - 301
         - 302
