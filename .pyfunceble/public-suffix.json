@@ -1155,6 +1155,7 @@
         "impertrixcdn.com",
         "indowapblog.com",
         "instance.datadetect.com",
+        "ip.linodeusercontent.com",
         "is-a-anarchist.com",
         "is-a-blogger.com",
         "is-a-bookkeeper.com",
@@ -2221,7 +2222,9 @@
         "stolos.io",
         "sys.qcx.io",
         "telebit.io",
+        "tickets.io",
         "uk0.bigv.io",
+        "upli.io",
         "utwente.io",
         "vaporcloud.io",
         "virtualserver.io",
@@ -2272,7 +2275,6 @@
         "alto-adige.it",
         "altoadige.it",
         "an.it",
-        "ancona.it",
         "andria-barletta-trani.it",
         "andria-trani-barletta.it",
         "andriabarlettatrani.it",
@@ -2760,6 +2762,7 @@
         "anamizu.ishikawa.jp",
         "anan.nagano.jp",
         "anan.tokushima.jp",
+        "ancona.it",
         "ando.nara.jp",
         "anjo.aichi.jp",
         "annaka.gunma.jp",
@@ -5791,6 +5794,7 @@
         "tlon.network"
     ],
     "news": [
+        "njs.jelastic.vps-host.net",
         "noticeable.news"
     ],
     "nf": [
