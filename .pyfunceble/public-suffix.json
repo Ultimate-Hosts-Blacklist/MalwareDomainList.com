@@ -2275,6 +2275,7 @@
         "alto-adige.it",
         "altoadige.it",
         "an.it",
+        "ancona.it",
         "andria-barletta-trani.it",
         "andria-trani-barletta.it",
         "andriabarlettatrani.it",
@@ -2762,7 +2763,6 @@
         "anamizu.ishikawa.jp",
         "anan.nagano.jp",
         "anan.tokushima.jp",
-        "ancona.it",
         "ando.nara.jp",
         "anjo.aichi.jp",
         "annaka.gunma.jp",
@@ -5794,7 +5794,6 @@
         "tlon.network"
     ],
     "news": [
-        "njs.jelastic.vps-host.net",
         "noticeable.news"
     ],
     "nf": [
