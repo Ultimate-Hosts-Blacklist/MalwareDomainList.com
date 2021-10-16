@@ -1460,7 +1460,12 @@
         "org.cu"
     ],
     "cv": [
-        "blogspot.cv"
+        "blogspot.cv",
+        "com.cv",
+        "edu.cv",
+        "int.cv",
+        "nome.cv",
+        "org.cv"
     ],
     "cw": [
         "com.cw",
@@ -4119,6 +4124,7 @@
         "tagami.niigata.jp",
         "tagawa.fukuoka.jp",
         "tahara.aichi.jp",
+        "taiji.wakayama.jp",
         "taiki.hokkaido.jp",
         "taiki.mie.jp",
         "tainai.niigata.jp",
@@ -5390,6 +5396,7 @@
         "roma.museum",
         "russia.museum",
         "saintlouis.museum",
+        "salem.museum",
         "salvadordali.museum",
         "salzburg.museum",
         "sandiego.museum",
@@ -5450,7 +5457,6 @@
         "svizzera.museum",
         "sweden.museum",
         "sydney.museum",
-        "taiji.wakayama.jp",
         "tank.museum",
         "tcm.museum",
         "technology.museum",
@@ -6390,7 +6396,6 @@
         "røyrvik.no",
         "salangen.no",
         "salat.no",
-        "salem.museum",
         "saltdal.no",
         "samnanger.no",
         "sande.more-og-romsdal.no",
