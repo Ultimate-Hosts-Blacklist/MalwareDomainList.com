@@ -4054,7 +4054,6 @@
         "shinyoshitomi.fukuoka.jp",
         "shiogama.miyagi.jp",
         "shiojiri.nagano.jp",
-        "shioya.tochigi.jp",
         "shirahama.wakayama.jp",
         "shirakawa.fukushima.jp",
         "shirakawa.gifu.jp",
@@ -5426,6 +5425,7 @@
         "settlers.museum",
         "shell.museum",
         "sherbrooke.museum",
+        "shioya.tochigi.jp",
         "sibenik.museum",
         "silk.museum",
         "ski.museum",
@@ -8252,7 +8252,6 @@
         "k12.dc.us",
         "k12.de.us",
         "k12.fl.us",
-        "k12.ga.us",
         "k12.gu.us",
         "k12.ia.us",
         "k12.id.us",
@@ -8497,6 +8496,10 @@
         "mypets.ws",
         "net.ws",
         "org.ws"
+    ],
+    "xn--j6w193g": [
+        "k12.ga.us",
+        "xn--mxtq1m.xn--j6w193g"
     ],
     "xyz": [
         "blogsite.xyz",
