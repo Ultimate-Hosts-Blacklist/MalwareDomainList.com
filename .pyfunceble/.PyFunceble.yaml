@@ -80,7 +80,6 @@ http_codes:
         - 416
         - 451
         potentially_up:
-        - 0
         - 300
         - 301
         - 302
@@ -144,6 +143,7 @@ lookup:
     special: true
     timeout: 5
     whois: true
+max_http_retries: 3
 share_logs: false
 user_agent:
     browser: chrome
