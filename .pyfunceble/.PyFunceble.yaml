@@ -5,6 +5,7 @@ cli_decoding:
     wildcard: false
 cli_testing:
     autocontinue: false
+    chancy_tester: false
     ci:
         active: false
         branch: master
@@ -82,7 +83,6 @@ http_codes:
         - 416
         - 451
         potentially_up:
-        - 0
         - 300
         - 301
         - 302
