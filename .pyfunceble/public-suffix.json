@@ -1562,7 +1562,6 @@
         "my-gateway.de",
         "my-router.de",
         "my-vigor.de",
-        "my-wan.de",
         "myhome-server.de",
         "myspreadshop.de",
         "pages.it.hs-heilbronn.de",
@@ -4828,6 +4827,7 @@
         "press.ma"
     ],
     "management": [
+        "my-wan.de",
         "router.management"
     ],
     "marketing": [
