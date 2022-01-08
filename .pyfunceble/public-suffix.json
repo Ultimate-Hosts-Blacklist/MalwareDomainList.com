@@ -2206,7 +2206,6 @@
         "mo-siemens.io",
         "mock.pstmn.io",
         "moonscale.io",
-        "ngrok.io",
         "nid.io",
         "on-k3s.io",
         "on-rio.io",
@@ -8512,6 +8511,10 @@
         "mypets.ws",
         "net.ws",
         "org.ws"
+    ],
+    "xn--p1acf": [
+        "ngrok.io",
+        "xn--h1aliz.xn--p1acf"
     ],
     "xyz": [
         "blogsite.xyz",
