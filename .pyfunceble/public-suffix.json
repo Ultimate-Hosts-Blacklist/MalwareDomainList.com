@@ -2239,7 +2239,8 @@
         "vaporcloud.io",
         "virtualserver.io",
         "webthings.io",
-        "wedeploy.io"
+        "wedeploy.io",
+        "worse-than.tv"
     ],
     "iq": [
         "com.iq",
@@ -7994,8 +7995,7 @@
     "tv": [
         "better-than.tv",
         "dyndns.tv",
-        "on-the-web.tv",
-        "worse-than.tv"
+        "on-the-web.tv"
     ],
     "tw": [
         "blogspot.tw",
@@ -8483,6 +8483,7 @@
         "name.vn",
         "net.vn",
         "org.vn",
+        "org.zw",
         "pro.vn"
     ],
     "vu": [
