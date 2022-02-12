@@ -163,6 +163,7 @@
     ],
     "app": [
         "a.run.app",
+        "beget.app",
         "bookonline.app",
         "clerk.app",
         "clerkstage.app",
@@ -1418,6 +1419,7 @@
         "uy.com",
         "vipsinaapp.com",
         "vs.mythic-beasts.com",
+        "vultrobjects.com",
         "wafflecell.com",
         "withgoogle.com",
         "withyoutube.com",
