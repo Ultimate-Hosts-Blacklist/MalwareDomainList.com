@@ -782,8 +782,7 @@
         "linkyard-cloud.ch",
         "myspreadshop.ch",
         "square7.ch",
-        "svc.firenet.ch",
-        "townnews-staging.com"
+        "svc.firenet.ch"
     ],
     "ci": [
         "ac.ci",
@@ -1615,6 +1614,7 @@
         "shiftcrypto.dev",
         "stg.dev",
         "stgstage.dev",
+        "user.localcert.dev",
         "vercel.dev",
         "webhare.dev",
         "workers.dev"
