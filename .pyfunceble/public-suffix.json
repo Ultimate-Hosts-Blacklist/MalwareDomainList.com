@@ -5108,6 +5108,7 @@
         "edu.ms",
         "gov.ms",
         "lab.ms",
+        "minisite.ms",
         "net.ms",
         "org.ms"
     ],
@@ -6959,7 +6960,6 @@
         "enterprisecloud.nu",
         "merseine.nu",
         "mine.nu",
-        "minisite.ms",
         "shacknet.nu"
     ],
     "nz": [
