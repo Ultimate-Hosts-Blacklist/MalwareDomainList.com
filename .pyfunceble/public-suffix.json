@@ -4973,6 +4973,9 @@
         "org.ma",
         "press.ma"
     ],
+    "management": [
+        "router.management"
+    ],
     "marketing": [
         "from.marketing",
         "with.marketing"
@@ -6961,7 +6964,6 @@
         "enterprisecloud.nu",
         "merseine.nu",
         "mine.nu",
-        "router.management",
         "shacknet.nu"
     ],
     "nz": [
