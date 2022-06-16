@@ -7749,7 +7749,8 @@
         "info.sd",
         "med.sd",
         "net.sd",
-        "org.sd"
+        "org.sd",
+        "tv.sd"
     ],
     "se": [
         "a.se",
@@ -8079,8 +8080,7 @@
         "orangecloud.tn",
         "org.tn",
         "perso.tn",
-        "tourism.tn",
-        "tv.sd"
+        "tourism.tn"
     ],
     "to": [
         "611.to",
