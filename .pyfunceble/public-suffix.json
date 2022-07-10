@@ -401,7 +401,6 @@
         "co.bi",
         "com.bi",
         "edu.bi",
-        "mil.cn",
         "or.bi",
         "org.bi"
     ],
@@ -2238,6 +2237,7 @@
         "editorx.io",
         "edugit.io",
         "fh-muenster.io",
+        "g.vbrplsbx.io",
         "ghost.io",
         "github.io",
         "gitlab.io",
@@ -5665,6 +5665,7 @@
         "volkenkunde.museum",
         "wales.museum",
         "wallonie.museum",
+        "war.museum",
         "washingtondc.museum",
         "watch-and-clock.museum",
         "watchandclock.museum",
@@ -6756,7 +6757,6 @@
         "våler.hedmark.no",
         "våler.østfold.no",
         "værøy.no",
-        "war.museum",
         "xn--andy-ira.no",
         "xn--asky-ira.no",
         "xn--aurskog-hland-jnb.no",
@@ -6968,7 +6968,6 @@
     ],
     "nu": [
         "enterprisecloud.nu",
-        "g.vbrplsbx.io",
         "merseine.nu",
         "mine.nu",
         "shacknet.nu"
