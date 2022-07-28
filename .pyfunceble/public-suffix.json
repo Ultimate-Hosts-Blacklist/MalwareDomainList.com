@@ -7735,6 +7735,7 @@
     ],
     "sc": [
         "com.sc",
+        "edu.sc",
         "gov.sc",
         "net.sc",
         "org.sc"
@@ -8308,7 +8309,6 @@
         "copro.uk",
         "cust.retrosnub.co.uk",
         "dh.bytemark.co.uk",
-        "edu.sc",
         "glug.org.uk",
         "gov.uk",
         "gwiddle.co.uk",
